@@ -34,3 +34,18 @@ export async function postCustomer(req,res){
         res.status(501).send(err.message)
     }
 }
+
+export async function putCustomer(req,res){
+    const {id} = req.params
+    const {name,phone,cpf,birthday} = req.body
+    
+    try {
+        const exists = await db.query('SELECT * FROM customers WHERE cpf=$1 AND id!=$2',[cpf,id])
+        if(exists.rows.length!=0) return res.sendStatus(409)
+        await db.query('UPDATE customers SET name=$1,phone=$2,cpf=$3,birthday=$4 WHERE id=$5',[name,phone,cpf,birthday,id])
+        res.sendStatus(201)
+    } catch (err) {
+        if(err.routine == 'DateTimeParseError') return res.sendStatus(400)
+        res.status(501).send(err.message)
+    }
+}
