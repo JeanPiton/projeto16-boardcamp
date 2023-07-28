@@ -4,9 +4,12 @@ export async function getGames(req,res){
     const name = req.query.name || ""
     const limit = req.query.limit || null
     const offset = req.query.offset || '0'
+    const order = ["id","name","image","stockTotal","pricePerDay"].includes(req.query.order)?req.query.order:"id"
+    const desc = req.query.desc=='true'?"DESC":"ASC"
 
     try {
-        const games = await db.query(`SELECT * FROM games WHERE name ILIKE $1 LIMIT $2 OFFSET $3`,[name+'%',limit,offset])
+        const games = await db.query(`SELECT * FROM games WHERE name ILIKE $1 ORDER BY ${order} ${desc}
+        LIMIT $2 OFFSET $3`,[name+'%',limit,offset])
         res.status(200).send(games.rows)
     } catch (err) {
         res.status(501).send(err.message)

@@ -5,12 +5,16 @@ export async function getRentals(req,res){
     const gameId = req.query.gameId || ""
     const limit = req.query.limit || null
     const offset = req.query.offset || '0'
+    const order = ["id","customerId","gameId","rentDate","daysRented","returnDate","originalPrice","delayFee","customerName","gameName"].includes(req.query.order)?req.query.order:"id"
+    const desc = req.query.desc=='true'?"DESC":"ASC"
+
     try {
         const {rows} = await db.query(`SELECT rentals.*,customers.name AS "customerName",games.name AS "gameName" 
         FROM rentals JOIN customers ON rentals."customerId"=customers.id 
         JOIN games ON rentals."gameId"=games.id
         WHERE CAST("customerId" AS TEXT) ILIKE $1
         AND CAST("gameId" AS TEXT) ILIKE $2
+        ORDER BY ${order} ${desc}
         LIMIT $3 OFFSET $4`,[customerId+"%",gameId+"%",limit,offset])
         const list = rows.map(e=>{
             let {customerName,gameName, ...rest} = e
