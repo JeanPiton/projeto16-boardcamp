@@ -1,8 +1,9 @@
 import { db } from "../database/database.connection.js";
 
 export async function getCustomers(req,res){
+    const cpf = req.query.cpf || ""
     try {
-        const list = await db.query(`SELECT *,TO_CHAR(birthday,'YYYY-MM-DD') AS birthday FROM customers`)
+        const list = await db.query(`SELECT *,TO_CHAR(birthday,'YYYY-MM-DD') AS birthday FROM customers WHERE cpf ILIKE $1`,[cpf+'%'])
         res.status(200).send(list.rows)
     } catch (err) {
         res.status(501).send(err.message)

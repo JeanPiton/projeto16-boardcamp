@@ -1,8 +1,7 @@
 import { db } from "../database/database.connection.js"
 
 export async function getGames(req,res){
-    const {name} = req.query
-    console.log(name)
+    const name = req.query.name || ""
 
     try {
         const games = await db.query(`SELECT * FROM games WHERE name ILIKE $1`,[name+'%'])
