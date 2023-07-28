@@ -2,9 +2,11 @@ import { db } from "../database/database.connection.js"
 
 export async function getGames(req,res){
     const name = req.query.name || ""
+    const limit = req.query.limit || null
+    const offset = req.query.offset || '0'
 
     try {
-        const games = await db.query(`SELECT * FROM games WHERE name ILIKE $1`,[name+'%'])
+        const games = await db.query(`SELECT * FROM games WHERE name ILIKE $1 LIMIT $2 OFFSET $3`,[name+'%',limit,offset])
         res.status(200).send(games.rows)
     } catch (err) {
         res.status(501).send(err.message)

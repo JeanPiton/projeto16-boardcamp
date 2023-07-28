@@ -2,8 +2,11 @@ import { db } from "../database/database.connection.js";
 
 export async function getCustomers(req,res){
     const cpf = req.query.cpf || ""
+    const limit = req.query.limit || null
+    const offset = req.query.offset || '0'
     try {
-        const list = await db.query(`SELECT *,TO_CHAR(birthday,'YYYY-MM-DD') AS birthday FROM customers WHERE cpf ILIKE $1`,[cpf+'%'])
+        const list = await db.query(`SELECT *,TO_CHAR(birthday,'YYYY-MM-DD') AS birthday FROM customers WHERE cpf ILIKE $1
+        LIMIT $2 OFFSET $3`,[cpf+'%',limit,offset])
         res.status(200).send(list.rows)
     } catch (err) {
         res.status(501).send(err.message)
