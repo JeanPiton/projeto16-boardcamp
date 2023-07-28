@@ -31,3 +31,21 @@ export async function postRentals(req,res){
         res.status(501).send(err.message)
     }
 }
+
+export async function closeRental(req,res){
+    const {id} = req.params
+
+    try {
+        const rentals = await db.query(`SELECT * FROM rentals WHERE id=$1`,[id])
+        if(rentals.rows.length==0) return res.sendStatus(404)
+        if(rentals.rows.returnDate != null) return res.sendStatus(400)
+        await db.query(`UPDATE rentals 
+        SET "returnDate"=CURRENT_DATE,
+        "delayFee"=((CURRENT_DATE - $1)*DIV($2,$3))
+        WHERE id=$4`,
+        [rentals.rows[0].rentDate,rentals.rows[0].originalPrice,rentals.rows[0].daysRented,id])
+        res.sendStatus(200)
+    } catch (err) {
+        res.status(501).send(err.message)
+    }
+}
