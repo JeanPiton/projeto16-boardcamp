@@ -14,7 +14,7 @@ export async function getRentals(req,res){
         JOIN games ON rentals."gameId"=games.id
         WHERE CAST("customerId" AS TEXT) ILIKE $1
         AND CAST("gameId" AS TEXT) ILIKE $2
-        ORDER BY ${order} ${desc}
+        ORDER BY "${order}" ${desc}
         LIMIT $3 OFFSET $4`,[customerId+"%",gameId+"%",limit,offset])
         const list = rows.map(e=>{
             let {customerName,gameName, ...rest} = e

@@ -8,7 +8,7 @@ export async function getGames(req,res){
     const desc = req.query.desc=='true'?"DESC":"ASC"
 
     try {
-        const games = await db.query(`SELECT * FROM games WHERE name ILIKE $1 ORDER BY ${order} ${desc}
+        const games = await db.query(`SELECT * FROM games WHERE name ILIKE $1 ORDER BY "${order}" ${desc}
         LIMIT $2 OFFSET $3`,[name+'%',limit,offset])
         res.status(200).send(games.rows)
     } catch (err) {
