@@ -41,7 +41,7 @@ export async function closeRental(req,res){
         if(rentals.rows[0].returnDate != null) return res.sendStatus(400)
         await db.query(`UPDATE rentals 
         SET "returnDate"=CURRENT_DATE,
-        "delayFee"=(((CURRENT_DATE - $1)-$5)*DIV($2,$3))
+        "delayFee"=(GREATEST(0,(CURRENT_DATE - $1)-$5)*DIV($2,$3))
         WHERE id=$4`,
         [rentals.rows[0].rentDate,rentals.rows[0].originalPrice,rentals.rows[0].daysRented,id,rentals.rows[0].daysRented])
         res.sendStatus(200)
