@@ -25,7 +25,7 @@ export async function postRentals(req,res){
 
         await db.query(`INSERT INTO rentals ("customerId","gameId","rentDate","daysRented","originalPrice")
         VALUES ($1,$2,CURRENT_DATE,$3,$4)`,
-        [customerId,gameId,daysRented,game.rows[0].stockTotal*daysRented])
+        [customerId,gameId,daysRented,game.rows[0].pricePerDay*daysRented])
         res.sendStatus(201)
     } catch (err) {
         res.status(501).send(err.message)
@@ -38,12 +38,12 @@ export async function closeRental(req,res){
     try {
         const rentals = await db.query(`SELECT * FROM rentals WHERE id=$1`,[id])
         if(rentals.rows.length==0) return res.sendStatus(404)
-        if(rentals.rows.returnDate != null) return res.sendStatus(400)
+        if(rentals.rows[0].returnDate != null) return res.sendStatus(400)
         await db.query(`UPDATE rentals 
         SET "returnDate"=CURRENT_DATE,
-        "delayFee"=((CURRENT_DATE - $1)*DIV($2,$3))
+        "delayFee"=(((CURRENT_DATE - $1)-$5)*DIV($2,$3))
         WHERE id=$4`,
-        [rentals.rows[0].rentDate,rentals.rows[0].originalPrice,rentals.rows[0].daysRented,id])
+        [rentals.rows[0].rentDate,rentals.rows[0].originalPrice,rentals.rows[0].daysRented,id,rentals.rows[0].daysRented])
         res.sendStatus(200)
     } catch (err) {
         res.status(501).send(err.message)
