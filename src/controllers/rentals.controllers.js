@@ -10,7 +10,7 @@ export async function getRentals(req,res){
         FROM rentals JOIN customers ON rentals."customerId"=customers.id 
         JOIN games ON rentals."gameId"=games.id
         WHERE CAST("customerId" AS TEXT) ILIKE $1
-        OR CAST("gameId" AS TEXT) ILIKE $2
+        AND CAST("gameId" AS TEXT) ILIKE $2
         LIMIT $3 OFFSET $4`,[customerId+"%",gameId+"%",limit,offset])
         const list = rows.map(e=>{
             let {customerName,gameName, ...rest} = e
