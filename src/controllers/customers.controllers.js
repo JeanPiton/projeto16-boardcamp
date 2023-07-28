@@ -9,7 +9,7 @@ export async function getCustomers(req,res){
 
     try {
         const list = await db.query(`SELECT *,TO_CHAR(birthday,'YYYY-MM-DD') AS birthday FROM customers WHERE cpf ILIKE $1
-        ORDER BY "${order}" ${desc} LIMIT $2 OFFSET $3`,[cpf+'%',limit,offset])
+        ORDER BY customers."${order}" ${desc} LIMIT $2 OFFSET $3`,[cpf+'%',limit,offset])
         res.status(200).send(list.rows)
     } catch (err) {
         res.status(501).send(err.message)
